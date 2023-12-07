@@ -223,6 +223,22 @@ typedef Sleef_SLEEF_VECTOR_FLOAT_2 vfloat2;
 #include "sleef.h"
 #endif
 
+#ifdef ENABLE_LASX
+#define CONFIG 1
+#include "helperlasx.h"
+#include "renamelasx.h"
+typedef Sleef___m256d_2 vdouble2;
+typedef Sleef___m256_2 vfloat2;
+#endif
+
+#ifdef ENABLE_LSX
+#define CONFIG 1
+#include "helperlsx.h"
+#include "renamelsx.h"
+typedef Sleef___m128d_2 vdouble2;
+typedef Sleef___m128_2 vfloat2;
+#endif
+
 #ifdef ENABLE_PUREC_SCALAR
 #define CONFIG 1
 #include "helperpurec_scalar.h"

@@ -21,7 +21,7 @@
 #define SLEEF_INLINE __forceinline
 #endif
 
-#if defined(__AVX2__) || defined(__aarch64__) || defined(__arm__) || defined(__powerpc64__) || defined(__zarch__)
+#if defined(__AVX2__) || defined(__aarch64__) || defined(__arm__) || defined(__powerpc64__) || defined(__zarch__) ||  defined(__loongarch64)
 #ifndef FP_FAST_FMA
 #define FP_FAST_FMA
 #endif
@@ -86,6 +86,14 @@ typedef __vector long long SLEEF_VECTOR_LONGLONG;
 typedef __vector unsigned long long SLEEF_VECTOR_ULONGLONG;
 #endif
 
+#if defined(__loongarch_sx)
+#include <lsxintrin.h>
+#endif
+
+#if defined(__loongarch_asx)
+#include <lasxintrin.h>
+#endif
+
 //
 
 #if defined(SLEEF_ENABLE_OMP_SIMD) && (defined(__GNUC__) || defined(__CLANG__)) && !defined(__INTEL_COMPILER)
@@ -99,6 +107,12 @@ typedef __vector unsigned long long SLEEF_VECTOR_ULONGLONG;
 #define SLEEF_PRAGMA_OMP_SIMD_DP _Pragma ("omp declare simd simdlen(4) notinbranch")
 #define SLEEF_PRAGMA_OMP_SIMD_SP _Pragma ("omp declare simd simdlen(8) notinbranch")
 #elif defined(__x86_64__) && defined(__SSE2__)
+#define SLEEF_PRAGMA_OMP_SIMD_DP _Pragma ("omp declare simd simdlen(2) notinbranch")
+#define SLEEF_PRAGMA_OMP_SIMD_SP _Pragma ("omp declare simd simdlen(4) notinbranch")
+#elif defined(__loongarch64) && defined(__loongarch_asx)
+#define SLEEF_PRAGMA_OMP_SIMD_DP _Pragma ("omp declare simd simdlen(4) notinbranch")
+#define SLEEF_PRAGMA_OMP_SIMD_SP _Pragma ("omp declare simd simdlen(8) notinbranch")
+#elif defined(__loongarch64) && defined(__loongarch_sx)
 #define SLEEF_PRAGMA_OMP_SIMD_DP _Pragma ("omp declare simd simdlen(2) notinbranch")
 #define SLEEF_PRAGMA_OMP_SIMD_SP _Pragma ("omp declare simd simdlen(4) notinbranch")
 #endif

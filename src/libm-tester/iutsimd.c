@@ -31,7 +31,7 @@
 #include <float.h>
 #include <limits.h>
 
-#if defined(__AVX2__) || defined(__aarch64__) || defined(__arm__) || defined(__powerpc64__)
+#if defined(__AVX2__) || defined(__aarch64__) || defined(__arm__) || defined(__powerpc64__) || defined(__loongarch64)
 #ifndef FP_FAST_FMA
 #define FP_FAST_FMA
 #endif
@@ -63,6 +63,14 @@
 
 #if defined(__VX__)
 #include <vecintrin.h>
+#endif
+
+#if defined(__loongarch_asx)
+#include <lasxintrin.h>
+#endif
+
+#if defined(__loongarch_sx)
+#include <lsxintrin.h>
 #endif
 
 #define SLEEF_ALWAYS_INLINE inline
@@ -365,6 +373,26 @@ typedef Sleef_SLEEF_VECTOR_FLOAT_2 vfloat2;
 #define CONFIG 2
 #include "helperrvv.h"
 #include "renamervvm2nofma.h"
+#endif
+
+#ifdef ENABLE_LASX
+#include "renamelasx.h"
+#if !defined(USE_INLINE_HEADER)
+#define CONFIG 1
+#include "helperlasx.h"
+typedef Sleef___m256d_2 vdouble2;
+typedef Sleef___m256_2 vfloat2;
+#endif
+#endif
+
+#ifdef ENABLE_LSX
+#include "renamelsx.h"
+#if !defined(USE_INLINE_HEADER)
+#define CONFIG 1
+#include "helperlsx.h"
+typedef Sleef___m128d_2 vdouble2;
+typedef Sleef___m128_2 vfloat2;
+#endif
 #endif
 
 #ifdef ENABLE_PUREC_SCALAR

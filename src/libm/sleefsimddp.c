@@ -274,6 +274,32 @@ extern const double Sleef_rempitabdp[];
 #endif
 #endif /* ENABLE_RVVM2NOFMA */
 
+// LoongArch
+
+#ifdef ENABLE_LASX
+#define CONFIG 1
+#include "helperlasx.h"
+#ifdef DORENAME
+#ifdef ENABLE_GNUABI
+#include "renamelasx_gnuabi.h"
+#else
+#include "renamelasx.h"
+#endif
+#endif
+#endif
+
+#ifdef ENABLE_LSX
+#define CONFIG 1
+#include "helperlsx.h"
+#ifdef DORENAME
+#ifdef ENABLE_GNUABI
+#include "renamelsx_gnuabi.h"
+#else
+#include "renamelsx.h"
+#endif
+#endif
+#endif
+
 // Generic
 
 #ifdef ENABLE_VECEXT

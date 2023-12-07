@@ -139,6 +139,20 @@ static vfloat64m2_t vd2gety_vd_vd2(vfloat64m4_t v) { return __riscv_vget_f64m2(v
 #undef VECTLENDP
 #endif
 
+#if defined(__loongarch_sx)
+static INLINE __m128d set__m128d(double d, int r) { static double a[2]; memrand(a, sizeof(a)); a[r & 1] = d; return (__m128d)__lsx_vld((void const *)a, 0); }
+static INLINE double get__m128d(__m128d v, int r) { static double a[2]; __lsx_vst(v, (void *)a, 0); return unifyValue(a[r & 1]); }
+static INLINE __m128 set__m128(float d, int r) { static float a[4]; memrand(a, sizeof(a)); a[r & 3] = d; return (__m128)__lsx_vld((void const *)a, 0); }
+static INLINE float get__m128(__m128 v, int r) { static float a[4]; __lsx_vst(v, (void *)a, 0); return unifyValuef(a[r & 3]); }
+#endif
+
+#if defined(__loongarch_asx)
+static INLINE __m256d set__m256d(double d, int r) { static double a[4]; memrand(a, sizeof(a)); a[r & 3] = d; return (__m256d)__lasx_xvld((void const *)a, 0); }
+static INLINE double get__m256d(__m256d v, int r) { static double a[4]; __lasx_xvst(v, (void *)a, 0); return unifyValue(a[r & 3]); }
+static INLINE __m256 set__m256(float d, int r) { static float a[8]; memrand(a, sizeof(a)); a[r & 7] = d; return (__m256)__lasx_xvld((void const *)a, 0); }
+static INLINE float get__m256(__m256 v, int r) { static float a[8]; __lasx_xvst(v, (void *)a, 0);; return unifyValuef(a[r & 7]); }
+#endif
+
 //
 
 // ATR = cinz_, NAME = sin, TYPE = d2, ULP = u35, EXT = sse2

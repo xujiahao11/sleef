@@ -374,6 +374,40 @@ extern const float Sleef_rempitabsp[];
 #endif
 #endif
 
+// LoongArch
+
+#ifdef ENABLE_LASX
+#define CONFIG 1
+#if !defined(SLEEF_GENHEADER)
+#include "helperlasx.h"
+#else
+#include "macroonlylasx.h"
+#endif
+#ifdef DORENAME
+#ifdef ENABLE_GNUABI
+#include "renamelasx_gnuabi.h"
+#else
+#include "renamelasx.h"
+#endif
+#endif
+#endif
+
+#ifdef ENABLE_LSX
+#define CONFIG 1
+#if !defined(SLEEF_GENHEADER)
+#include "helperlsx.h"
+#else
+#include "macroonlylsx.h"
+#endif
+#ifdef DORENAME
+#ifdef ENABLE_GNUABI
+#include "renamelsx_gnuabi.h"
+#else
+#include "renamelsx.h"
+#endif
+#endif
+#endif
+
 // Generic
 
 #ifdef ENABLE_VECEXT

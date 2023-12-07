@@ -113,6 +113,36 @@ typedef svint32_t vint;
 typedef svint32_t vint2;
 #endif /* ENABLE_SVE */
 
+#ifdef ENABLE_LSX
+#include <lsxintrin.h>
+
+#define ISA_TOKEN b
+#define VLEN_SP 4
+#define VLEN_DP 2
+#define VECTOR_CC
+
+typedef __m128i vopmask;
+typedef __m128d vdouble;
+typedef __m128  vfloat;
+typedef __m128i vint;
+typedef __m128i vint2;
+#endif /* ENABLE_LSX */
+
+#ifdef ENABLE_LASX
+#include <lasxintrin.h>
+
+#define ISA_TOKEN d
+#define VLEN_SP 8
+#define VLEN_DP 4
+#define VECTOR_CC
+
+typedef __m256i vopmask;
+typedef __m256d vdouble;
+typedef __m256 vfloat;
+typedef __m256i vint;
+typedef __m256i vint2;
+#endif /* ENABLE_LASX */
+
 // GNUABI name mangling macro.
 #ifndef MASKED_GNUABI
 

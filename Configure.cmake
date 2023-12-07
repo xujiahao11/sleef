@@ -122,6 +122,11 @@ elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "s390x")
   set(CLANG_FLAGS_ENABLE_PURECFMA_SCALAR "-march=z14;-mzvector")
 elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "riscv64")
   set(SLEEF_ARCH_RISCV64 ON CACHE INTERNAL "True for RISCV64 architecture.")
+
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "loongarch64")
+  set(SLEEF_ARCH_LOONGARCH64 ON CACHE INTERNAL "True for loongarch64 architecture.")
+  set(COMPILER_SUPPORTS_LSX 1)
+  set(COMPILER_SUPPORTS_LASX 1)
 endif()
 
 set(COMPILER_SUPPORTS_PUREC_SCALAR 1)
@@ -171,6 +176,9 @@ set(CLANG_FLAGS_ENABLE_RVVM1 "-march=rv64gcv_zba_zbb_zbs")
 set(CLANG_FLAGS_ENABLE_RVVM1NOFMA "-march=rv64gcv_zba_zbb_zbs")
 set(CLANG_FLAGS_ENABLE_RVVM2 "-march=rv64gcv_zba_zbb_zbs")
 set(CLANG_FLAGS_ENABLE_RVVM2NOFMA "-march=rv64gcv_zba_zbb_zbs")
+# LoongArch vector extensions.
+set(CLANG_FLAGS_ENABLE_LASX "-mlasx")
+set(CLANG_FLAGS_ENABLE_LSX "-mlsx")
 
 set(FLAGS_OTHERS "")
 
@@ -666,6 +674,42 @@ endif()
 
 if (ENFORCE_RVVM2 AND NOT COMPILER_SUPPORTS_RVVM2)
   message(FATAL_ERROR "ENFORCE_RVVM2 is specified and that feature is disabled or not supported by the compiler")
+endif()
+
+# LASX
+
+option(DISABLE_LASX "Disable LASX" OFF)
+option(ENFORCE_LASX "Build fails if LASX is not supported by the compiler" OFF)
+
+if(SLEEF_ARCH_LOONGARCH64 AND NOT DISABLE_LASX)
+  string (REPLACE ";" " " CMAKE_REQUIRED_FLAGS "${FLAGS_ENABLE_LASX}")
+  CHECK_C_SOURCE_COMPILES("
+  #include <lasxintrin.h>
+  int main() {
+    __m256d r;
+  }" COMPILER_SUPPORTS_LASX)
+endif()
+
+if (ENFORCE_LASX AND NOT COMPILER_SUPPORTS_LASX)
+  message(FATAL_ERROR "ENFORCE_LASX is specified and that feature is disabled or not supported by the compiler")
+endif()
+
+# LSX
+
+option(DISABLE_LSX "Disable LSX" OFF)
+option(ENFORCE_LSX "Build fails if LSX is not supported by the compiler" OFF)
+
+if(SLEEF_ARCH_LOONGARCH64 AND NOT DISABLE_LSX)
+  string (REPLACE ";" " " CMAKE_REQUIRED_FLAGS "${FLAGS_ENABLE_LSX}")
+  CHECK_C_SOURCE_COMPILES("
+  #include <lsxintrin.h>
+  int main() {
+    __m128d r;
+  }" COMPILER_SUPPORTS_LSX)
+endif()
+
+if (ENFORCE_LSX AND NOT COMPILER_SUPPORTS_LSX)
+  message(FATAL_ERROR "ENFORCE_LSX is specified and that feature is disabled or not supported by the compiler")
 endif()
 
 # CUDA
