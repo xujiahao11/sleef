@@ -1,0 +1,56 @@
+From 5e3280df76d1a037d8f59ff2cea6fd24c36c5fa6 Mon Sep 17 00:00:00 2001
+From: Jiahao Xu <xujiahao@loongson.cn>
+Date: Thu, 7 Dec 2023 20:25:53 +0800
+Subject: [PATCH 2/2] test
+
+
+diff --git a/.github/workflows/build_and_test.yml b/.github/workflows/build_and_test.yml
+index d11cc54..e9c4d89 100644
+--- a/.github/workflows/build_and_test.yml
++++ b/.github/workflows/build_and_test.yml
+@@ -133,7 +133,7 @@ jobs:
+     strategy:
+       fail-fast: false
+       matrix:
+-        arch: [aarch64, armhf, ppc64el, s390x, riscv64]
++        arch: [aarch64, armhf, ppc64el, s390x, riscv64, loongarch64]
+         compiler: [gcc, llvm]
+         include:
+           - arch: armhf
+@@ -149,6 +149,8 @@ jobs:
+           # doesn't track a recent enough version yet
+           - arch: riscv64
+             compiler: gcc
++          - arch: loongarch64
++            compiler: gcc
+ 
+     name: build-${{ matrix.arch }}-${{ matrix.compiler }}
+     steps:
+@@ -231,6 +233,14 @@ jobs:
+             EXTRA_CMAKE_FLAGS="${EXTRA_CMAKE_FLAGS} -DBUILD_DFT=OFF"
+             # Disable quad, it's missing the `Sleef_quad` function
+             EXTRA_CMAKE_FLAGS="${EXTRA_CMAKE_FLAGS} -DBUILD_QUAD=OFF"
++          elif [[ ${{ matrix.arch }} = "loongarch64" ]]; then
++            EXTRA_CMAKE_FLAGS="${EXTRA_CMAKE_FLAGS} -DENFORCE_LASX=ON -DENFORCE_LSX=ON"
++             # Disable inline headers, they just don't compile on riscv64
++             EXTRA_CMAKE_FLAGS="${EXTRA_CMAKE_FLAGS} -DBUILD_INLINE_HEADERS=OFF"
++             # Disable dft, it fails with linker error to `cexp`
++             EXTRA_CMAKE_FLAGS="${EXTRA_CMAKE_FLAGS} -DBUILD_DFT=OFF"
++             # Disable quad, it's missing the `Sleef_quad` function
++             EXTRA_CMAKE_FLAGS="${EXTRA_CMAKE_FLAGS} -DBUILD_QUAD=OFF" 
+           fi
+ 
+           cmake -S . -B _build-${{ matrix.arch }} -GNinja \
+@@ -334,6 +344,9 @@ jobs:
+           - arch: riscv64
+             compiler: llvm
+             qemu_cpu: "rv64,zba=true,zbb=true,zbs=true,v=true,vlen=512,elen=64,vext_spec=v1.0"
++          - arch: loongarch64
++            compiler: llvm
++
+ 
+     name: "test-${{ matrix.arch }}-${{ matrix.compiler }} (qemu_cpu: \"${{ matrix.qemu_cpu }}\")"
+     steps:
+-- 
+2.20.1
+
